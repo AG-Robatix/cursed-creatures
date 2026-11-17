@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Cursed Creatures: Tales of the Hunt</title>
+<meta name="description" content="A dark-fantasy side-scrolling action-adventure. You are a monster hunter on the trail of a Voidspawn: five chapters, five bosses, side contracts, and choices that shape the ending. Plays in the browser with keyboard, gamepad or touch.">
+<meta name="author" content="AGRobatix">
+<meta name="theme-color" content="#0b0d0c">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cursed Creatures: Tales of the Hunt">
+<meta property="og:description" content="A dark-fantasy monster-hunting adventure you can play in your browser. Five chapters, five bosses, and choices that shape the ending.">
+<meta property="og:image" content="cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cursed Creatures">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+  html, body { margin: 0; height: 100%; background: #07080a; overflow: hidden; overscroll-behavior: none; }
+  body { display: flex; align-items: center; justify-content: center; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  canvas { display: block; background: #000; image-rendering: auto; cursor: default; outline: none; touch-action: none; }
+  /* phones held upright: ask for landscape */
+  #rotate { display: none; position: fixed; inset: 0; background: #07080a; color: #e2c27a; font: 18px Georgia, serif; align-items: center; justify-content: center; text-align: center; padding: 24px; z-index: 5; }
+  @media (orientation: portrait) and (pointer: coarse) { #rotate { display: flex; } }
+  noscript { color: #e2c27a; font: 16px Georgia, serif; }
+  /* the "Save code" screen: real text boxes and buttons laid over the game */
+  #xfer { position: fixed; inset: 0; z-index: 4; display: flex; align-items: center; justify-content: center; padding: 10px; padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); box-sizing: border-box; font: 15px Georgia, "Palatino Linotype", serif; color: #ece6d6; }
+  #xfer[hidden] { display: none; }
+  .xf-box { width: min(860px, 100%); max-height: 100%; overflow: auto; box-sizing: border-box; padding: 14px 18px; background: rgba(10,11,14,.95); border: 1.5px solid rgba(196,164,96,.85); outline: 1px solid rgba(196,164,96,.22); outline-offset: -6px; }
+  .xf-box h2 { margin: 0 0 8px; font-size: 20px; color: #f3e2b0; text-align: center; font-weight: bold; letter-spacing: 1px; }
+  .xf-box h3 { margin: 0 0 4px; font-size: 15px; color: #e2c27a; }
+  .xf-box p { margin: 0 0 6px; line-height: 1.3; }
+  .xf-cols { display: flex; gap: 18px; }
+  .xf-cols section { flex: 1; min-width: 0; }
+  @media (max-width: 560px) { .xf-cols { flex-direction: column; gap: 10px; } }
+  .xf-box textarea { display: block; width: 100%; box-sizing: border-box; resize: none; padding: 6px 8px; font: 16px ui-monospace, Menlo, Consolas, monospace; line-height: 1.25; word-break: break-all; color: #f3e2b0; background: rgba(255,255,255,.06); border: 1px solid rgba(196,164,96,.7); border-radius: 0; -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+  .xf-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0 6px; }
+  .xf-box button { min-height: 40px; padding: 6px 16px; font: bold 15px Georgia, serif; color: #f3e2b0; background: rgba(196,164,96,.16); border: 1px solid rgba(196,164,96,.85); border-radius: 0; cursor: pointer; touch-action: manipulation; }
+  .xf-box button:hover, .xf-box button:focus-visible { background: rgba(196,164,96,.32); }
+  .xf-box button:focus-visible, .xf-box textarea:focus-visible { outline: 2px solid #f3e2b0; outline-offset: 1px; }
+  .xf-box button:disabled { opacity: .45; cursor: default; }
+  .xf-box button[hidden] { display: none; }
+  #xf-close { display: block; margin: 8px auto 0; min-width: 140px; }
+  .xf-small { font-size: 13px; color: #a9a28e; min-height: 1.3em; }
+  .xf-bad { color: #e8a08a; } .xf-good { color: #b9d99a; }
+  #xf-copied { font-size: 13px; color: #b9d99a; }
+  @media (max-height: 420px) {      /* a phone held sideways: keep everything on one screen */
+    .xf-box { padding: 8px 14px; } .xf-box h2 { font-size: 17px; margin-bottom: 4px; } .xf-box p { margin-bottom: 4px; }
+    .xf-box textarea { height: 3.1em; } .xf-row { margin: 6px 0 4px; } #xf-close { margin-top: 4px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="game" tabindex="0"></canvas>
+<div id="rotate">Turn your phone sideways to play<br>Cursed Creatures: Tales of the Hunt</div>
+<noscript>This game needs JavaScript to run.</noscript>
+<script src="js/core.js?v=17"></script>
+<script src="js/audio.js?v=17"></script>
+<script src="js/art.js?v=17"></script>
+<script src="js/entities.js?v=17"></script>
+<script src="js/bosses.js?v=17"></script>
+<script src="js/game.js?v=17"></script>
+<script src="js/controls.js?v=17"></script>
+<script src="js/levels.js?v=17"></script>
+<script src="js/transfer.js?v=17"></script>
+<script src="js/main.js?v=17"></script>
+<script>
+  // on a real (https) site, keep an offline copy so the game can be installed to the home screen
+  if ('serviceWorker' in navigator && location.protocol === 'https:') window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { }));
+</script>
+</body>
+</html>
